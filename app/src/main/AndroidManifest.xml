@@ -16,7 +16,8 @@
             android:name=".presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.ShoppingList.NoActionBar">
+            android:theme="@style/Theme.ShoppingList.NoActionBar"
+            android:configChanges="orientation|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
