@@ -1,23 +1,22 @@
 package com.example.shoppinglist.presentation
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
-    var list = listOf<ShopItem>()
-    set(value){
-        field = value
-        notifyDataSetChanged()
-    }
+class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(ShopItemDiffCallback()) {
+    var onShopItemLongClickListener: ((ShopItem)->Unit)? = null
+    var onShopItemClickListener: ((ShopItem)->Unit)? = null
 
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view){
-        val tvName = view.findViewById<TextView>(R.id.tvName)
-        val tvCount = view.findViewById<TextView>(R.id.tvCount)
+        val tvName: TextView = view.findViewById(R.id.tvName)
+        val tvCount: TextView = view.findViewById(R.id.tvCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
@@ -27,22 +26,26 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         return ShopItemViewHolder(view)
     }
 
+    var count = 1
+
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        val item = list[position]
+        Log.d("ShopListAdapter", "onBindViewHolder, count: ${++count}")
+        val item = getItem(position)
         holder.tvName.text = item.name
         holder.tvCount.text = item.count.toString()
-        holder.view.setOnClickListener{
+        holder.view.setOnLongClickListener{
+            onShopItemLongClickListener?.invoke(item)
             true
+        }
+
+        holder.view.setOnClickListener{
+            onShopItemClickListener?.invoke(item)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = list[position]
+        val item = getItem(position)
         return if (item.enabled) VIEW_TYPE_ENABLED else VIEW_TYPE_DISABLED
-    }
-
-    override fun getItemCount(): Int {
-       return list.size
     }
 
     companion object{
